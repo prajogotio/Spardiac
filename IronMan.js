@@ -10,41 +10,105 @@ function RectBuilding(row, col, baseWidth, baseHeight, height) {
 }
 
 RectBuilding.prototype.build = function() {
-	var X = this.x;
-	var Y = 0;
-	var Z = this.z;
 	var BW = this.baseWidth;
 	var BH = this.baseHeight;
 	var H = this.height;
-	this.points = [
-		new Point({x:X-BW/2,y:Y,z:Z-BH/2}),
-		new Point({x:X+BW/2,y:Y,z:Z-BH/2}),
-		new Point({x:X-BW/2,y:Y-H,z:Z-BH/2}),
-		new Point({x:X-BW/2,y:Y,z:Z+BH/2}),
-		new Point({x:X+BW/2,y:Y-H,z:Z-BH/2}),
-		new Point({x:X-BW/2,y:Y-H,z:Z+BH/2}),
-		new Point({x:X+BW/2,y:Y,z:Z+BH/2}),
-		new Point({x:X+BW/2,y:Y-H,z:Z+BH/2}),
-	];
-	this.segments = [
-		new Segment(this.points[0],this.points[1]),
-		new Segment(this.points[0],this.points[2]),
-		new Segment(this.points[0],this.points[3]),
-		new Segment(this.points[1],this.points[4]),
-		new Segment(this.points[1],this.points[6]),
-		new Segment(this.points[2],this.points[5]),
-		new Segment(this.points[2],this.points[4]),
-		new Segment(this.points[3],this.points[5]),
-		new Segment(this.points[3],this.points[6]),
-		new Segment(this.points[4],this.points[7]),
-		new Segment(this.points[5],this.points[7]),
-		new Segment(this.points[6],this.points[7]),
-	];
+	for(var i = 0; i < H; ++i) {
+		var Y = -i * 100;
+		for(var j = 0; j < BW; ++j) {
+			this.points.push(new Point({x : this.x + j * 100, y : Y, z : this.z}));
+			this.points.push(new Point({x : this.x + j * 100, y : Y, z : this.z + (BH-1) * 100}));
+			if(j > 0) {
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) + 2 * j], this.points[i * 2 * (BW+BH) + 2 * (j-1)]));
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) + 2 * j + 1], this.points[i * 2 * (BW+BH) + 2 * (j-1) + 1]));
+			}
+			if(i > 0) {
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) + 2 * j], this.points[(i-1) * 2 * (BW+BH) + 2 * j]));
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) + 2 * j + 1], this.points[(i-1) * 2 * (BW+BH) + 2 * j + 1]));
+			}
+			if(i == H-1) {
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) + 2 * j], this.points[i * 2 * (BW+BH) + 2 * j + 1]));
+			}
+		}
+		for(var j = 0; j < BH; ++j) {
+			this.points.push(new Point({x : this.x, y : Y, z : this.z + j * 100}));
+			this.points.push(new Point({x : this.x + (BW-1) * 100 , y : Y, z : this.z + j * 100}));
+			if(j > 0) {
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) +2*BW + 2 * j], this.points[i * 2 * (BW+BH) +2*BW + 2 * (j-1)]));
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) +2*BW + 2 * j + 1], this.points[i * 2 * (BW+BH) +2*BW + 2 * (j-1) + 1]));
+			}
+			if(i>0) {
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) + 2*BW + 2 * j], this.points[(i-1) * 2 * (BW+BH) + 2*BW+ 2 * j]));
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) + 2*BW+ 2 * j + 1], this.points[(i-1) * 2 * (BW+BH) + 2*BW+ 2 * j + 1]));
+			}
+			if(i == H-1) {
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) + 2*BW + 2 * j], this.points[i * 2 * (BW+BH) + 2*BW + 2 * j + 1]));
+			}
+		}
+	}
 }
 
 RectBuilding.prototype.render = function(g, camera) {
 	WorldGrid.prototype.render.call(this, g, camera);
 }
+
+function PrismBuilding(row, col, baseWidth, baseHeight, height) {
+	this.baseWidth = baseWidth;
+	this.baseHeight = baseHeight;
+	this.height = height;
+	this.points = [];
+	this.segments = [];
+	this.x = row * 100;
+	this.z = col * 100;
+	this.build();
+}
+
+PrismBuilding.prototype.build = function() {
+	var BW = this.baseWidth;
+	var BH = this.baseHeight;
+	var H = this.height;
+	var length = 100;
+	var dec = length / (H+5);
+	for(var i = 0; i < H; ++i) {
+		var Y = -i * 100;
+		for(var j = 0; j < BW; ++j) {
+			this.points.push(new Point({x : this.x + j * length, y : Y, z : this.z}));
+			this.points.push(new Point({x : this.x + j * length, y : Y, z : this.z + (BH-1) * length}));
+			if(j > 0) {
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) + 2 * j], this.points[i * 2 * (BW+BH) + 2 * (j-1)]));
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) + 2 * j + 1], this.points[i * 2 * (BW+BH) + 2 * (j-1) + 1]));
+			}
+			if(i > 0) {
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) + 2 * j], this.points[(i-1) * 2 * (BW+BH) + 2 * j]));
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) + 2 * j + 1], this.points[(i-1) * 2 * (BW+BH) + 2 * j + 1]));
+			}
+			if(i == H-1) {
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) + 2 * j], this.points[i * 2 * (BW+BH) + 2 * j + 1]));
+			}
+		}
+		for(var j = 0; j < BH; ++j) {
+			this.points.push(new Point({x : this.x, y : Y, z : this.z + j * length}));
+			this.points.push(new Point({x : this.x + (BW-1) * length , y : Y, z : this.z + j * length}));
+			if(j > 0) {
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) +2*BW + 2 * j], this.points[i * 2 * (BW+BH) +2*BW + 2 * (j-1)]));
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) +2*BW + 2 * j + 1], this.points[i * 2 * (BW+BH) +2*BW + 2 * (j-1) + 1]));
+			}
+			if(i>0) {
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) + 2*BW + 2 * j], this.points[(i-1) * 2 * (BW+BH) + 2*BW+ 2 * j]));
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) + 2*BW+ 2 * j + 1], this.points[(i-1) * 2 * (BW+BH) + 2*BW+ 2 * j + 1]));
+			}
+			if(i == H-1) {
+				this.segments.push(new Segment(this.points[i * 2 * (BW+BH) + 2*BW + 2 * j], this.points[i * 2 * (BW+BH) + 2*BW + 2 * j + 1]));
+			}
+		}
+		length -= dec;
+	}
+}
+
+PrismBuilding.prototype.render = function(g, camera) {
+	WorldGrid.prototype.render.call(this, g, camera);
+}
+
 
 function WorldGrid(row, col) {
 	this.row = row;
@@ -78,14 +142,25 @@ WorldGrid.prototype.render = function(g, camera) {
 	}
 }
 
+
+
 var command = {};
 
 document.addEventListener("DOMContentLoaded",function(){
 	g = document.getElementById("display").getContext('2d');
-	var camera = new Camera({x:0, y:-100, z:1000});
+	var camera = new Camera({x:0, y:-100, z:1500});
 	var wgrid = new WorldGrid(60, 30);
-	var rectbuilding = [];
-	//rectbuilding.push(new RectBuilding(10, 10, 400, 400, 800));
+	var buildings = [];
+	//buildings.push(new RectBuilding(10, 20, 4, 4, 13));
+	//buildings.push(new RectBuilding(19, 20, 5, 4, 10));
+	//buildings.push(new RectBuilding(18, 0, 3, 5, 6));
+	//buildings.push(new PrismBuilding(14, 0, 4, 4, 12));
+	buildings.push(new PrismBuilding(45, 20, 5, 5, 15));
+	buildings.push(new PrismBuilding(45, 5, 5, 5, 15));
+	for (var i = 0; i < 60; i += 7) {
+		buildings.push(new PrismBuilding(i, 27, 2, 2, 5));
+		buildings.push(new PrismBuilding(i, 0, 2, 2, 5));
+	}
 	document.addEventListener("keydown", function(e) {
 		if(e.which==38){command['MOVE'] = true;}
 		if(e.which==65){command['X'] = true;}
@@ -118,13 +193,15 @@ document.addEventListener("DOMContentLoaded",function(){
 		}
 		if(command['ZZ']){
 			//camera.setNormal(Spardiac.rotateZ(camera.n,-4/180*Math.PI));
-			camera.rotateX(-4/180*Math.PI);
+			camera.rotateZ(4/180*Math.PI);
 
 		}
 		g.clearRect(0,0,1000,600);
 		wgrid.render(g, camera);
-		for(var i=0;i<rectbuilding.length;++i){
-			rectbuilding[i].render(g,camera);
+		for(var i=0;i<buildings.length;++i){
+			buildings[i].render(g,camera);
 		}
 	},1000/60);
 })
+
+
