@@ -208,6 +208,20 @@ Camera.prototype.rotateZ = function(alpha) {
 	this.computeOrientShift();
 }
 
+Camera.prototype.rotateAlongOrientation = function(alpha) {
+	this.n = Spardiac.rotateAlongAxis(this.n, this.orient, alpha);
+	this.computeCommonAxis();
+	this.computeOrientShift();
+}
+
+Camera.prototype.rotateAlongPerpendicularOrientation = function(alpha) {
+	var axis = Spardiac.crossProduct(this.n, this.orient);
+	this.n = Spardiac.rotateAlongAxis(this.n, axis, alpha);
+	this.orient = Spardiac.rotateAlongAxis(this.orient, axis, alpha);
+	this.computeCommonAxis();
+	this.computeOrientShift();
+}
+
 Camera.prototype.computeOrientShift = function() {
 	var orientProj = Spardiac.rotateAlongAxis(this.orient, this.axis, this.theta);
 	var orientShift = Spardiac.findAngleBetween({x:0,y:1,z:0}, orientProj);
