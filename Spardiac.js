@@ -137,6 +137,17 @@ Spardiac.rotateAlongAxis = function(vec, axis, alpha) {
 	return res;
 }
 
+Spardiac.rotateAlongAxisClosedForm = function(vec, axis, theta) {
+	var ctheta = Math.cos(theta);
+	var stheta = Math.sin(theta);
+	var T = [
+		ctheta + axis.x * axis.x * (1 - ctheta), axis.x * axis.y * (1-ctheta) - axis.z * stheta, axis.x * axis.z * (1-ctheta) + axis.y * stheta,
+		axis.y * axis.x * (1 - ctheta) + axis.z * stheta, ctheta + axis.y * axis.y * (1-ctheta), axis.y * axis.z * (1-ctheta) - axis.x * stheta, 
+		axis.z * axis.x * (1 - ctheta) - axis.y * stheta, axis.z * axis.y * (1-ctheta) + axis.x * stheta, ctheta + axis.z * axis.z * (1 - ctheta)
+	];
+	return Spardiac.transform(vec, T);
+}
+
 Spardiac.distanceBetween = function(vec1, vec2) {
 	var dx = vec1.x - vec2.x;
 	var dy = vec1.y - vec2.y;
@@ -209,15 +220,15 @@ Camera.prototype.rotateZ = function(alpha) {
 }
 
 Camera.prototype.rotateAlongOrientation = function(alpha) {
-	this.n = Spardiac.rotateAlongAxis(this.n, this.orient, alpha);
+	this.n = Spardiac.rotateAlongAxisClosedForm(this.n, this.orient, alpha);
 	this.computeCommonAxis();
 	this.computeOrientShift();
 }
 
 Camera.prototype.rotateAlongPerpendicularOrientation = function(alpha) {
 	var axis = Spardiac.crossProduct(this.n, this.orient);
-	this.n = Spardiac.rotateAlongAxis(this.n, axis, alpha);
-	this.orient = Spardiac.rotateAlongAxis(this.orient, axis, alpha);
+	this.n = Spardiac.rotateAlongAxisClosedForm(this.n, axis, alpha);
+	this.orient = Spardiac.crossProduct(axis, this.n);
 	this.computeCommonAxis();
 	this.computeOrientShift();
 }

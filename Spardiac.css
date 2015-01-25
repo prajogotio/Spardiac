@@ -1,6 +1,45 @@
-#display {
+#display  {
 	position: absolute;
 	margin: auto;
 	left: 0;
 	right: 0;
+	top: 50px;
+}
+
+.header {
+	position: absolute;
+	margin: auto;
+	left: 0;
+	right: 0;
+	width: 500px;
+	text-align: center;
+	font-size : 2em;
+}
+
+.footer {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	padding-right: 10px;
+}
+
+#announcer {
+	position: absolute;
+	margin: auto;
+	left: 0;
+	right: 0;
+	top: 200px;
+	text-align: center;
+	padding-top: 49px;
+	width: 400px;
+	height: 180px;
+	font-size: 1.5em;
+	border: 1px solid black;
+	z-index: 1;
+	cursor: pointer;
+}
+
+* {
+	font-family : helvetica;
+	font-weight: lighter;
 }
