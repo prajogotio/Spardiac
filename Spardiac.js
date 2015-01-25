@@ -176,7 +176,7 @@ Spardiac.subtract = function(vec1, vec2) {
 
 
 
-function Camera(pos, n) {
+function Camera(pos) {
 	this.pos = pos;
 	this.n = {x:1,y:0,z:0};
 	this.orient = {x:0,y:1,z:0};
@@ -227,18 +227,9 @@ Camera.prototype.computeCommonAxis = function() {
 	this.theta = theta;
 }
 
-Camera.prototype.renderPointToScreen = function(g, point) {
-	this.computeProjectionToScreen(point);
-	if(point.getProjection() == null) return;
-	this.renderingHandler(g, point.getProjection());
-}
-
 Camera.prototype.computePointProjection = function(point) {
 	this.computeProjectionToScreen(point);
 	if(point.getProjection() == null) return;
-}
-
-Camera.prototype.renderingHandler = function(g, vec) {
 }
 
 Camera.prototype.computeProjectionToScreen = function(point) {
@@ -292,97 +283,101 @@ Segment.prototype.renderSegment = function(g){
 	g.moveTo(this.point1.getProjection().x, this.point1.getProjection().y);
 	g.lineTo(this.point2.getProjection().x, this.point2.getProjection().y);
 	g.stroke();
+	//this.point1.renderPoint(g);
+	//this.point2.renderPoint(g);
 }
 
 
 //TESTING CODE
-var command = {};
-document.addEventListener("DOMContentLoaded", function(){
-	var g = document.getElementById('display').getContext('2d');
-	var points = [];
-	var segments = [];
-	for(var i=0;i<20;++i){
-		for(var j=0;j<12;++j){
-			var X = i*100;
-			var Y = 0;
-			var Z = j*100;
-			var len = points.length;
-			points = points.concat([
-				new Point({x:X-50,y:Y-50,z:Z-50}),
-				new Point({x:X+50,y:Y-50,z:Z-50}),
-				new Point({x:X-50,y:Y+50,z:Z-50}),
-				new Point({x:X-50,y:Y-50,z:Z+50}),
-				new Point({x:X+50,y:Y+50,z:Z-50}),
-				new Point({x:X-50,y:Y+50,z:Z+50}),
-				new Point({x:X+50,y:Y-50,z:Z+50}),
-				new Point({x:X+50,y:Y+50,z:Z+50}),
-			]);
-			segments = segments.concat([
-				new Segment(points[len+0],points[len+1]),
-				new Segment(points[len+0],points[len+2]),
-				new Segment(points[len+0],points[len+3]),
-				new Segment(points[len+1],points[len+4]),
-				new Segment(points[len+1],points[len+6]),
-				new Segment(points[len+2],points[len+5]),
-				new Segment(points[len+2],points[len+4]),
-				new Segment(points[len+3],points[len+5]),
-				new Segment(points[len+3],points[len+6]),
-				new Segment(points[len+4],points[len+7]),
-				new Segment(points[len+5],points[len+7]),
-				new Segment(points[len+6],points[len+7]),
-			]);
-		}
-	}
-	var len = points.length;
-	points.push(new Point({x:0,y:0,z:0}));
-	points.push(new Point({x:0,y:0,z:500}));
-	//points.push(new Point({x:500,y:0,z:0}));
-	//points.push(new Point({x:0,y:500,z:0}));
-	segments.push(new Segment(points[len],points[len+1]));
-	//segments.push(new Segment(points[len],points[len+2]));
-	//segments.push(new Segment(points[len],points[len+3]));
-	var camera = new Camera({x:0, y: -120, z:600}, {x:1,y:0,z:0});
-	for (var i = 0; i<points.length;++i)camera.renderPointToScreen(g, points[i]);
-	for (var i = 0; i<segments.length;++i)segments[i].renderSegment(g);
-	var alpha = Math.atan(300/500);
-	var r = Math.sqrt(300*300 + 500*500);
-	document.addEventListener("keydown", function(e) {
-		if(e.which==38){command['MOVE'] = true;}
-		if(e.which==65){command['X'] = true;}
-		if(e.which==87){command['Y'] = true;}
-		if(e.which==68){command['Z'] = true;}
-		if(e.which==40){command['ZZ'] = true;}
-	});
-	document.addEventListener("keyup", function(e) {
-		if(e.which==38){command['MOVE'] = false;}
-		if(e.which==65){command['X'] = false;}
-		if(e.which==87){command['Y'] = false;}
-		if(e.which==68){command['Z'] = false;}
-		if(e.which==40){command['ZZ'] = false;}
+// var command = {};
+// document.addEventListener("DOMContentLoaded", function(){
+// 	var g = document.getElementById('display').getContext('2d');
+// 	var points = [];
+// 	var segments = [];
+// 	for(var i=0;i<90;++i){
+// 		for(var j=0;j<4;++j){
+// 			for(var k=0;k<1;++k){
+// 				var X = i*100;
+// 				var Y = -k*100;
+// 				var Z = j*100;
+// 				var len = points.length;
+// 				points = points.concat([
+// 					new Point({x:X-50,y:Y-50,z:Z-50}),
+// 					new Point({x:X+50,y:Y-50,z:Z-50}),
+// 					new Point({x:X-50,y:Y+50,z:Z-50}),
+// 					new Point({x:X-50,y:Y-50,z:Z+50}),
+// 					new Point({x:X+50,y:Y+50,z:Z-50}),
+// 					new Point({x:X-50,y:Y+50,z:Z+50}),
+// 					new Point({x:X+50,y:Y-50,z:Z+50}),
+// 					new Point({x:X+50,y:Y+50,z:Z+50}),
+// 				]);
+// 				segments = segments.concat([
+// 					new Segment(points[len+0],points[len+1]),
+// 					new Segment(points[len+0],points[len+2]),
+// 					new Segment(points[len+0],points[len+3]),
+// 					new Segment(points[len+1],points[len+4]),
+// 					new Segment(points[len+1],points[len+6]),
+// 					new Segment(points[len+2],points[len+5]),
+// 					new Segment(points[len+2],points[len+4]),
+// 					new Segment(points[len+3],points[len+5]),
+// 					new Segment(points[len+3],points[len+6]),
+// 					new Segment(points[len+4],points[len+7]),
+// 					new Segment(points[len+5],points[len+7]),
+// 					new Segment(points[len+6],points[len+7]),
+// 				]);
+// 			}
+// 		}
+// 	}
+// 	//var len = points.length;
+// 	//points.push(new Point({x:0,y:0,z:0}));
+// 	//points.push(new Point({x:0,y:0,z:500}));
+// 	//points.push(new Point({x:500,y:0,z:0}));
+// 	//points.push(new Point({x:0,y:500,z:0}));
+// 	//segments.push(new Segment(points[len],points[len+1]));
+// 	//segments.push(new Segment(points[len],points[len+2]));
+// 	//segments.push(new Segment(points[len],points[len+3]));
+// 	var camera = new Camera({x:0, y: -120, z:100});
+// 	for (var i = 0; i<points.length;++i)camera.computePointProjection(points[i]);
+// 	for (var i = 0; i<segments.length;++i)segments[i].renderSegment(g);
+// 	var alpha = Math.atan(300/500);
+// 	var r = Math.sqrt(300*300 + 500*500);
+// 	document.addEventListener("keydown", function(e) {
+// 		if(e.which==38){command['MOVE'] = true;}
+// 		if(e.which==65){command['X'] = true;}
+// 		if(e.which==87){command['Y'] = true;}
+// 		if(e.which==68){command['Z'] = true;}
+// 		if(e.which==40){command['ZZ'] = true;}
+// 	});
+// 	document.addEventListener("keyup", function(e) {
+// 		if(e.which==38){command['MOVE'] = false;}
+// 		if(e.which==65){command['X'] = false;}
+// 		if(e.which==87){command['Y'] = false;}
+// 		if(e.which==68){command['Z'] = false;}
+// 		if(e.which==40){command['ZZ'] = false;}
 
-	});
-	setInterval(function(){
-		if(command['MOVE']){camera.pos = Spardiac.add(camera.pos, Spardiac.scalarProduct(camera.n, 10));}
-		if(command['X']){
-			//camera.setNormal(Spardiac.rotateX(camera.n,4/180*Math.PI));
-			camera.rotateX(4/180*Math.PI);
-		}
-		if(command['Y']){
-			//camera.setNormal(Spardiac.rotateY(camera.n,4/180*Math.PI));
-			camera.rotateY(4/180*Math.PI);
-		}
-		if(command['Z']){
-			//camera.setNormal(Spardiac.rotateZ(camera.n,4/180*Math.PI));
-			camera.rotateZ(4/180*Math.PI);
+// 	});
+// 	setInterval(function(){
+// 		if(command['MOVE']){camera.pos = Spardiac.add(camera.pos, Spardiac.scalarProduct(camera.n, 10));}
+// 		if(command['X']){
+// 			//camera.setNormal(Spardiac.rotateX(camera.n,4/180*Math.PI));
+// 			camera.rotateX(4/180*Math.PI);
+// 		}
+// 		if(command['Y']){
+// 			//camera.setNormal(Spardiac.rotateY(camera.n,4/180*Math.PI));
+// 			camera.rotateY(4/180*Math.PI);
+// 		}
+// 		if(command['Z']){
+// 			//camera.setNormal(Spardiac.rotateZ(camera.n,4/180*Math.PI));
+// 			camera.rotateZ(-4/180*Math.PI);
 
-		}
-		if(command['ZZ']){
-			//camera.setNormal(Spardiac.rotateZ(camera.n,-4/180*Math.PI));
-			camera.rotateX(-4/180*Math.PI);
+// 		}
+// 		if(command['ZZ']){
+// 			//camera.setNormal(Spardiac.rotateZ(camera.n,-4/180*Math.PI));
+// 			camera.rotateX(-4/180*Math.PI);
 
-		}
-		g.clearRect(0,0,1000,600);
-		for (var i = 0; i<points.length;++i)camera.renderPointToScreen(g, points[i]);
-		for (var i = 0; i<segments.length;++i)segments[i].renderSegment(g);
-	},1000/60);
-});
+// 		}
+// 		g.clearRect(0,0,1000,600);
+// 		for (var i = 0; i<points.length;++i)camera.computePointProjection(points[i]);
+// 		for (var i = 0; i<segments.length;++i)segments[i].renderSegment(g);
+// 	},1000/60);
+// });
